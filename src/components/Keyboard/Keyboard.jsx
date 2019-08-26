@@ -34,7 +34,7 @@ const KeyBoardWrapper = styled.div`
   box-shadow: 0 5px 11px rgba(0, 0, 0, 0.08);
 `;
 
-const Keyboard = ({ onChange, width }) => {
+const Keyboard = ({ onChange, width, notes }) => {
   const [notesSelected, setNotesSelected] = useState([]);
   const [keyWidth, setKeyWidth] = useState(40);
   const [keyHeight, setKeyHeight] = useState(80);
@@ -42,16 +42,19 @@ const Keyboard = ({ onChange, width }) => {
   const [endNOte, setEndNote] = useState(0);
 
   const toggleNote = _note => {
+    let newNotes;
     if (notesSelected.includes(_note)) {
-      setNotesSelected(notesSelected.filter(n => n !== _note));
+      newNotes = notesSelected.filter(n => n !== _note);
     } else {
-      setNotesSelected(notesSelected.concat([_note]));
+      newNotes = notesSelected.concat([_note]);
     }
+    setNotesSelected(newNotes);
+    onChange(newNotes);
   };
 
   useEffect(() => {
-    onChange(notesSelected);
-  }, [notesSelected]);
+    setNotesSelected(notes);
+  }, [notes]);
 
   useEffect(() => {
     const { keyWidth, start, end, height } = getKeyRangeBasedOnSize(width);
@@ -76,7 +79,6 @@ const Keyboard = ({ onChange, width }) => {
             noteRef={nn}
             onClick={() => {
               toggleNote(nn);
-              console.log("CLICK", nn);
             }}
             isSelected={notesSelected.includes(nn)}
           />

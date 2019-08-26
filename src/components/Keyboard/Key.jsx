@@ -1,12 +1,14 @@
 import React from "react";
 import styled from "styled-components";
-import { numberToNote } from "./helpers";
+import { numberToNote } from "../../helpers/noteutils";
 
-const whiteKeyColor = "#fff";
+const whiteKeyColor =
+  "background: rgb(255,255,255); background: linear-gradient(184deg,rgba(255,255,255,1) 0%,rgb(228, 228, 228) 100%);";
 const whiteKeyColorHover = "#efefef";
 const whiteKeyColorSelected = "#239ea5";
 
-const blackKeyColor = "#333";
+const blackKeyColor =
+  "background: rgb(0,0,0); background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(20,20,20,1) 6%, rgba(50,50,50,1) 26%, rgba(62,62,62,1) 40%, rgba(0,0,0,1) 100%);";
 const blackKeyColorHover = "#777";
 const blackKeyColorSelected = "#61a569";
 
@@ -26,6 +28,7 @@ const WhiteKey = styled(BaseKey)`
   z-index: 1;
   background: ${props =>
     props.isSelected ? whiteKeyColorSelected : whiteKeyColor};
+
   &:hover {
     background: ${props =>
       props.isSelected ? whiteKeyColorSelected : whiteKeyColorHover};

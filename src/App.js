@@ -1,20 +1,22 @@
 import React from "react";
-import Keyboard from "./components/Keyboard/Keyboard";
-import soundplayer from "./soundplayer";
-import { ScreenClassProvider } from "react-grid-system";
-import useWindowSize from "./hooks/useWindowSize";
 import GlobalStyle from "./styles/GlobalStyle";
+import AppStateWrapper from "./components/AppState/AppStateWrapper";
+import useKeyboard from "./state/useKeyboard";
+import Entry from "./components/Entry/Entry";
+import AppWrapper from "./components/AppWrapper/AppWrapper";
+
+const stateContainers = {
+  keyboard: useKeyboard
+};
 
 function App() {
-  const windowSize = useWindowSize();
-
   return (
     <>
       <GlobalStyle />
-      <Keyboard
-        width={windowSize.width}
-        onChange={notes => soundplayer.play(notes)}
-      />
+
+      <AppStateWrapper containers={stateContainers} wrappers={[<AppWrapper />]}>
+        <Entry />
+      </AppStateWrapper>
     </>
   );
 }
