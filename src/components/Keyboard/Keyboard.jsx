@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Key from "./Key";
 
-const fooBar = () => {};
-
 const getKeyRangeBasedOnSize = size => {
   let keyWidth = 50;
   let potentiallyHowManyWhiteKeys = 8;
@@ -33,6 +31,7 @@ const KeyBoardWrapper = styled.div`
   height: ${props => props.height}px;
   overflow: hidden;
   white-space: nowrap;
+  box-shadow: 0 5px 11px rgba(0, 0, 0, 0.08);
 `;
 
 const Keyboard = ({ onChange, width }) => {
