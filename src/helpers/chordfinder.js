@@ -3,73 +3,99 @@
 import { arrayUnique } from "./arrayUnique";
 import chordlookup from "./chordlookup";
 import { getNotesArray } from "./noteutils";
+import orderBy from "lodash/orderBy";
+import uniq from "lodash/uniq";
 
 export const chordFinder = (notes: Array<number>): Object => {
   let sortedNotes = notes.sort((a, b) => a - b);
   let firstSweep = getChordsFromNotes(sortedNotes);
 
-  firstSweep["possibilities"] = getPossibilitiesFromNotes(sortedNotes);
+  const test = removeDupesFromResultArray(
+    getPossibilitiesFromNotes(sortedNotes)
+  );
 
-  return firstSweep;
+  return {
+    matches: firstSweep,
+    possibilities: test
+  };
 };
 
-export const getPossibilitiesFromNotes = (notes: Array<number>) => {
+export const getPossibilitiesFromNotes = (
+  notes: Array<number>
+): Array<Object> => {
   let sortedNotes = notes.sort((a, b) => a - b);
-  const firstNote = sortedNotes[sortedNotes.length - 1] + 12;
-  const lastNote = sortedNotes[0] - 12;
+  const firstNote = sortedNotes[sortedNotes.length - 1] + 13;
+  const lastNote = sortedNotes[0] - 13;
   let possibilities = [];
 
   for (let x = firstNote; x > lastNote; x--) {
     let originalNoteSelection = [...sortedNotes];
     originalNoteSelection.push(x);
-    //console.log("LOOKING AT", originalNoteSelection.join(","));
 
-    const newThing = getChordsFromNotes(originalNoteSelection);
-
-    if (newThing.anythingFound) {
-      possibilities.push(newThing);
-      //console.log("FOUND", newThing);
+    if (uniq(originalNoteSelection).length === originalNoteSelection.length) {
+      const newThing = getChordsFromNotes(originalNoteSelection);
+      if (newThing.length > 0) {
+        possibilities = possibilities.concat(newThing);
+        //console.log("FOUND", newThing);
+      }
     }
   }
 
-  return removeDuplicatesFromPossibilities(possibilities);
+  return orderBy(
+    possibilities,
+    ["startsWithRoot", "spreadFactor"],
+    ["desc", "asc"]
+  );
 };
 
-export const removeDuplicatesFromPossibilities = (
-  possibilities: Array<Object>
-) => {
-  return possibilities.reduce((acc, curr) => {
-    const hasAny = acc.some(_result => {
-      return _result.results.some(_r => {
-        return curr.results.some(_cr => {
-          return _r.key === _cr.key;
-        });
-      });
-    });
+export const removeFromResultArrayByKey = (resultArray, key) => {
+  return resultArray.filter(_r => {
+    return _r.key !== key;
+  });
+};
 
-    return hasAny === false ? [...acc, curr] : acc;
+const db = o => {
+  return `${o.key} [${o.originalNotes.join(",")}] [${o.matchesRoot}]`;
+};
+
+export const removeDupesFromResultArray = (
+  results: Array<Object>
+): Array<Object> => {
+  let lookupKey = {};
+
+  return results.reduce((acc, curr) => {
+    if (!lookupKey[curr.key]) {
+      acc = acc.concat(curr);
+      lookupKey[curr.key] = true;
+    }
+
+    return acc;
   }, []);
 };
 
-export const getChordsFromNotes = (notes: Array<number>): Object => {
+export const calculateSpreadFactor = (notes: Array<number>): number => {
+  return notes[notes.length - 1] - notes[0];
+};
+
+export const getChordsFromNotes = (notes: Array<number>): Array<Object> => {
   const normalisedRootVariations = getNormalisedRootVariations(notes);
   const bassNoteNumber = getBassNote(notes);
-  //setNoteHash(reducedNotesToHash(normalisedRootVariations[0]));
   let chordLookup = {};
 
-  const results = normalisedRootVariations
+  return normalisedRootVariations
     .map(h => {
       const noteHash = reducedNotesToHash(h);
-
       const modifier = lookupChord(noteHash);
       const root = getNotesArray()[h[0]];
       const lookupKey = `${root}${modifier}`;
 
       const retValue =
-        modifier && chordLookup[lookupKey] !== true
+        modifier && !chordLookup[lookupKey]
           ? {
               key: lookupKey,
-              matchesRoot: bassNoteNumber === h[0],
+              originalNotes: notes,
+              spreadFactor: calculateSpreadFactor(notes),
+              startsWithRoot: bassNoteNumber === h[0],
               matchedHash: noteHash,
               modifier,
               rootNumber: h[0],
@@ -79,21 +105,8 @@ export const getChordsFromNotes = (notes: Array<number>): Object => {
       chordLookup[lookupKey] = true;
       return retValue;
     })
-    .filter(n => n !== false);
-
-  const exactMatchesFound = results.filter(r => r.matchesRoot === true);
-  const nonExactMatchesFound = results.filter(r => r.matchesRoot !== true);
-
-  //
-
-  return {
-    anythingFound: results.length > 0,
-    hasExactMatches: exactMatchesFound.length > 0,
-    exactMatchesFound,
-    nonExactMatchesFound,
-    results,
-    originalNotes: notes
-  };
+    .filter(n => n !== false)
+    .sort((a, b) => (b.startsWithRoot === true ? 1 : -1));
 };
 
 export const getNormalisedRootVariations = (

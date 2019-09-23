@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Possibilities } from "./Possibilities";
 
 const Box = styled.div`
   padding: 16px;
@@ -10,8 +11,7 @@ const Center = styled.div`
 `;
 
 const PrimaryChordFound = styled.div`
-  text-transform: lowercase;
-  font-size: 33px;
+  font-size: 20px;
   color: #239ea5;
 
   font-weight: bold;
@@ -19,7 +19,6 @@ const PrimaryChordFound = styled.div`
   min-width: 300px;
   width: 300px;
   margin: auto;
-  padding: 16px;
 `;
 
 const SecondaryChordsFound = styled.div`
@@ -35,65 +34,43 @@ const SecondaryChordsTitle = styled.div`
 `;
 
 const ResultsFound = ({ results }) => {
-  if (results.anythingFound === false || results.length === 0) return null;
-
-  return results.hasExactMatches === true ? (
-    <ExactMatches results={results} />
-  ) : (
-    <NonExactMatches results={results} />
-  );
-};
-const ExactMatches = ({ results }) => {
+  console.log("VCASH", results);
+  const { matches, possibilities } = results;
+  const hasMatches = matches.length > 0;
+  const hasPossibles = possibilities.length > 0;
   return (
     <>
-      <Box>
-        <Center>
-          {results.exactMatchesFound.map(({ root, modifier }) => {
-            return (
-              <PrimaryChordFound>
-                {root} {modifier}
-              </PrimaryChordFound>
-            );
-          })}
-        </Center>
-      </Box>
-      <Box>
-        <Center>
-          {results.nonExactMatchesFound.length > 0 && (
-            <SecondaryChordsTitle>It also could be:</SecondaryChordsTitle>
-          )}
-
-          {results.nonExactMatchesFound.map(({ root, modifier }) => {
-            return (
-              <SecondaryChordsFound>
-                {root} {modifier}
-              </SecondaryChordsFound>
-            );
-          })}
-        </Center>
-      </Box>
+      <>
+        {hasMatches && (
+          <Box>
+            <Center>
+              <h2>Found</h2>
+              {matches.map(({ root, modifier }) => {
+                return (
+                  <PrimaryChordFound>
+                    {root} {modifier}
+                  </PrimaryChordFound>
+                );
+              })}
+            </Center>
+          </Box>
+        )}
+        {hasPossibles && (
+          <Box>
+            <Center>
+              <h2>Possibles</h2>
+              {possibilities.map(({ root, modifier }) => {
+                return (
+                  <PrimaryChordFound>
+                    {root} {modifier}
+                  </PrimaryChordFound>
+                );
+              })}
+            </Center>
+          </Box>
+        )}
+      </>
     </>
-  );
-};
-
-const NonExactMatches = ({ results }) => {
-  return (
-    <Box>
-      <Center>
-        {results.nonExactMatchesFound &&
-          results.nonExactMatchesFound.length > 0 && (
-            <SecondaryChordsTitle>Found</SecondaryChordsTitle>
-          )}
-
-        {results.nonExactMatchesFound.map(({ root, modifier }) => {
-          return (
-            <SecondaryChordsFound>
-              {root} {modifier}
-            </SecondaryChordsFound>
-          );
-        })}
-      </Center>
-    </Box>
   );
 };
 

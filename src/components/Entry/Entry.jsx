@@ -8,7 +8,7 @@ import ShowHash from "../ShowHash/ShowHash";
 import ResultsFound from "../ResultsFound/ResultsFound";
 
 const Entry = () => {
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState({ matches: [], possibilities: [] });
 
   const windowSize = useWindowSize();
   const { selectedNotes, setSelectedNotes } = useAppState("keyboard");
