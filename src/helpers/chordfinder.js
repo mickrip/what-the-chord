@@ -5,6 +5,53 @@ import chordlookup from "./chordlookup";
 import { getNotesArray } from "./noteutils";
 
 export const chordFinder = (notes: Array<number>): Object => {
+  let sortedNotes = notes.sort((a, b) => a - b);
+  let firstSweep = getChordsFromNotes(sortedNotes);
+
+  firstSweep["possibilities"] = getPossibilitiesFromNotes(sortedNotes);
+
+  return firstSweep;
+};
+
+export const getPossibilitiesFromNotes = (notes: Array<number>) => {
+  let sortedNotes = notes.sort((a, b) => a - b);
+  const firstNote = sortedNotes[sortedNotes.length - 1] + 12;
+  const lastNote = sortedNotes[0] - 12;
+  let possibilities = [];
+
+  for (let x = firstNote; x > lastNote; x--) {
+    let originalNoteSelection = [...sortedNotes];
+    originalNoteSelection.push(x);
+    //console.log("LOOKING AT", originalNoteSelection.join(","));
+
+    const newThing = getChordsFromNotes(originalNoteSelection);
+
+    if (newThing.anythingFound) {
+      possibilities.push(newThing);
+      //console.log("FOUND", newThing);
+    }
+  }
+
+  return removeDuplicatesFromPossibilities(possibilities);
+};
+
+export const removeDuplicatesFromPossibilities = (
+  possibilities: Array<Object>
+) => {
+  return possibilities.reduce((acc, curr) => {
+    const hasAny = acc.some(_result => {
+      return _result.results.some(_r => {
+        return curr.results.some(_cr => {
+          return _r.key === _cr.key;
+        });
+      });
+    });
+
+    return hasAny === false ? [...acc, curr] : acc;
+  }, []);
+};
+
+export const getChordsFromNotes = (notes: Array<number>): Object => {
   const normalisedRootVariations = getNormalisedRootVariations(notes);
   const bassNoteNumber = getBassNote(notes);
   //setNoteHash(reducedNotesToHash(normalisedRootVariations[0]));
@@ -16,11 +63,12 @@ export const chordFinder = (notes: Array<number>): Object => {
 
       const modifier = lookupChord(noteHash);
       const root = getNotesArray()[h[0]];
-      const lookupKey = `${modifier}${root}`;
+      const lookupKey = `${root}${modifier}`;
 
       const retValue =
         modifier && chordLookup[lookupKey] !== true
           ? {
+              key: lookupKey,
               matchesRoot: bassNoteNumber === h[0],
               matchedHash: noteHash,
               modifier,
@@ -36,12 +84,15 @@ export const chordFinder = (notes: Array<number>): Object => {
   const exactMatchesFound = results.filter(r => r.matchesRoot === true);
   const nonExactMatchesFound = results.filter(r => r.matchesRoot !== true);
 
+  //
+
   return {
     anythingFound: results.length > 0,
     hasExactMatches: exactMatchesFound.length > 0,
     exactMatchesFound,
     nonExactMatchesFound,
-    results
+    results,
+    originalNotes: notes
   };
 };
 
