@@ -53,6 +53,7 @@ const ResultsFound = ({ results }) => {
                 );
               })}
             </Center>
+            ""
           </Box>
         )}
         {hasPossibles && (
