@@ -7,8 +7,6 @@ let newVar = {
   "0004080b": "aug.maj.7",
   "0004080a": "aug.7",
   "00040a": "aug.6.italian",
-  "0004060a": "aug.6.french",
-  "0004070a": "aug.6.german",
   "000306": "dim",
   "0003060b": "dim.maj.7",
   "00030609": "dim.7",

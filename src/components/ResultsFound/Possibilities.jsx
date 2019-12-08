@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import React from "react";
 
 export const Possibilities = ({ possibilities }) => {
   const { exactMatchesFound, nonExactMatchesFound } = possibilities;

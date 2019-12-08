@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React  from "react";
 import styled from "styled-components";
-import { Possibilities } from "./Possibilities";
+
 
 const Box = styled.div`
   padding: 16px;
@@ -21,17 +21,6 @@ const PrimaryChordFound = styled.div`
   margin: auto;
 `;
 
-const SecondaryChordsFound = styled.div`
-  font-size: 20px;
-`;
-
-const SecondaryChordsTitle = styled.div`
-  font-size: 19px;
-  text-transform: uppercase;
-  font-weight: bold;
-  letter-spacing: 1px;
-  color: #848484;
-`;
 
 const ResultsFound = ({ results }) => {
   console.log("VCASH", results);

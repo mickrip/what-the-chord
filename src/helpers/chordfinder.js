@@ -54,9 +54,6 @@ export const removeFromResultArrayByKey = (resultArray, key) => {
   });
 };
 
-const db = o => {
-  return `${o.key} [${o.originalNotes.join(",")}] [${o.matchesRoot}]`;
-};
 
 export const removeDupesFromResultArray = (
   results: Array<Object>
