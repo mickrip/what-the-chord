@@ -6,6 +6,7 @@ import { useAppState } from "../AppState";
 import { chordFinder } from "../../helpers/chordfinder";
 import ShowHash from "../ShowHash/ShowHash";
 import ResultsFound from "../ResultsFound/ResultsFound";
+import Meta from "../Meta/Meta";
 
 const Entry = () => {
   const [results, setResults] = useState({ matches: [], possibilities: [] });
@@ -22,6 +23,7 @@ const Entry = () => {
 
   return (
     <>
+      <Meta results={results} />
       <Keyboard
         notes={selectedNotes}
         width={windowSize.width}

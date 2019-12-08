@@ -44,6 +44,7 @@ let newVar = {
   "0005070a": "7.sus4", //Seventh suspension four
   "000507": "sus", // suspended
   "00010407090a": "13.flat.9", //Thirteenth flat ninth
-  "00010406090a": "13.flat.9.flat.5" //Thirteenth flat ninth flat fifth
+  "00010406090a": "13.flat.9.flat.5", //Thirteenth flat ninth flat fifth
+  "000203070b": "min.maj.7.9" // Pink panther
 };
 export default newVar;
