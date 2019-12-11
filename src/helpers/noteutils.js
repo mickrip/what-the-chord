@@ -27,3 +27,13 @@ export const noteObjToNumber = (noteObj: { note: string, octave: number }) => {
 
   return notes.indexOf(note) + (octave + 1) * 12;
 };
+
+export const selectedNotesToVex = (selectedNotes) => {
+  const noteObjs = selectedNotes.map(n => numberToNote(n));
+  const treble = noteObjs.filter(n => n.octave >= 4);
+  const bass = noteObjs.filter(n => n.octave < 4);
+  return {
+    "treble": treble.map(n => `${n.note}/${n.octave}`),
+    "bass": bass.map(n => `${n.note}/${n.octave}`)
+  };
+};
