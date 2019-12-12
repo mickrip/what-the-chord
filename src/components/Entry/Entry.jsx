@@ -4,7 +4,7 @@ import useWindowSize from "../../hooks/useWindowSize";
 import Keyboard from "../Keyboard/Keyboard";
 import { useAppState } from "../AppState";
 import { chordFinder } from "../../helpers/chordfinder";
-import ShowHash from "../ShowHash/ShowHash";
+
 import ResultsFound from "../ResultsFound/ResultsFound";
 import Meta from "../Meta/Meta";
 import Notation from "../Notation/Notation";
@@ -46,7 +46,6 @@ const Entry = () => {
           </Col>
         </Row>
       </Grid>
-      <ShowHash selectedNotes={selectedNotes} />
     </>
   );
 };

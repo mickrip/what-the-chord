@@ -16,15 +16,12 @@ const TopBar = () => {
         <Grid fluid>
           <Row>
             <Col xs={6}>
-              <h1>What the Chord</h1>
+              <h1>
+                What the Chord <small>(beta)</small>
+              </h1>
             </Col>
             <Col xs={6}>
               <ul className="top-nav">
-                <li>
-                  <a href="#" onClick={() => {}}>
-                    Settings
-                  </a>
-                </li>
                 <li>
                   <a
                     href="#"

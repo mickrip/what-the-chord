@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const useConfig = () => {
   const [midi, setMidi] = useState(false);

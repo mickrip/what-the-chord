@@ -66,7 +66,6 @@ const Notation = ({ selectedNotes }) => {
 
     const formatter = new VF.Formatter();
 
-    // Make sure the staves have the same starting point for notes
     const startX = Math.max(
       topStaff.getNoteStartX(),
       bottomStaff.getNoteStartX()
@@ -83,7 +82,6 @@ const Notation = ({ selectedNotes }) => {
     const joined = [tv, bv].filter(v => !!v);
 
     if (joined.length > 0) {
-      console.log("K", joined);
       formatter.format(joined, 1);
       formatter.formatToStave(joined, topStaff, { align_rests: true });
 

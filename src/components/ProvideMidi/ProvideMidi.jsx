@@ -1,56 +1,77 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useAppState } from "../AppState";
 import uniq from "lodash/uniq";
-import throttle from "lodash/throttle";
+
 import debounce from "lodash/debounce";
 
 let currentNotes = [];
+let midiInputs;
 
 const ProvideMidi = ({ children }) => {
   const { midi } = useAppState("config");
-  const { selectedNotes, setSelectedNotes } = useAppState("keyboard");
+  const { setSelectedNotes } = useAppState("keyboard");
+  const [alreadyInitialised, setAlreadyInitialised] = useState(false);
 
   const throttleSetSelectedNotes = debounce(n => {
-    console.log("TRUTH", n);
     setSelectedNotes(n);
-  }, 500);
+  }, 400);
 
-  const addNote = noteId => {
-    const t = new Date().getTime();
+  const addNote = useCallback(
+    noteId => {
+      const t = new Date().getTime();
 
-    currentNotes = currentNotes.filter(v => {
-      return t - v.t < 700;
-    });
+      currentNotes = currentNotes.filter(v => {
+        return t - v.t < 400;
+      });
 
-    currentNotes.push({
-      t,
-      noteId
-    });
+      currentNotes.push({
+        t,
+        noteId
+      });
 
-    const uniqueNotes = uniq(currentNotes.map(x => x.noteId));
+      const sortedNotes = currentNotes.map(x => x.noteId);
+      const uniqueNotes = uniq(sortedNotes);
 
-    throttleSetSelectedNotes(uniqueNotes);
-  };
+      throttleSetSelectedNotes(uniqueNotes.sort());
+    },
+    [throttleSetSelectedNotes]
+  );
 
-  const midiHandler = m => {
-    var command = m.data[0];
-    var note = m.data[1];
-    var velocity = m.data.length > 2 ? m.data[2] : 0; // a velocity value might not be included with a noteOff command
+  const midiHandler = useCallback(
+    m => {
+      const command = m.data[0];
+      const note = m.data[1];
+      const velocity = m.data.length > 2 ? m.data[2] : 0; // a velocity value might not be included with a noteOff command
 
-    if (velocity > 0 && command > 0) {
-      addNote(note);
-    }
-  };
+      if (velocity > 0 && command > 0) {
+        addNote(note);
+      }
+    },
+    [addNote]
+  );
 
   useEffect(() => {
     if (midi === true) {
-      navigator.requestMIDIAccess().then(function(access) {
-        for (const input of access.inputs.values()) {
-          input.onmidimessage = midiHandler;
+      if (alreadyInitialised === false) {
+        navigator.requestMIDIAccess().then(function(access) {
+          midiInputs = access.inputs;
+
+          for (const input of midiInputs.values()) {
+            input.onmidimessage = midiHandler;
+          }
+          setAlreadyInitialised(true);
+        });
+      }
+    } else {
+      // turn off everything
+      if (alreadyInitialised) {
+        for (const input of midiInputs.values()) {
+          input.onmidimessage = () => {};
         }
-      });
+        setAlreadyInitialised(false);
+      }
     }
-  }, [midi]);
+  }, [midi, midiHandler, alreadyInitialised]);
 
   return <>{children}</>;
 };
