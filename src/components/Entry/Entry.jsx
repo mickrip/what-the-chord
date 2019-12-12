@@ -9,6 +9,8 @@ import ResultsFound from "../ResultsFound/ResultsFound";
 import Meta from "../Meta/Meta";
 import Notation from "../Notation/Notation";
 import { Col, Grid, Row } from "react-styled-flexboxgrid";
+import TopBar from "../TopBar/TopBar";
+import ProvideMidi from "../ProvideMidi/ProvideMidi";
 
 const Entry = () => {
   const [results, setResults] = useState({ matches: [], possibilities: [] });
@@ -18,27 +20,33 @@ const Entry = () => {
   useEffect(() => {
     const matchedHashes = chordFinder(selectedNotes);
     setResults(matchedHashes);
-    console.log("matchedHashes", matchedHashes);
   }, [selectedNotes]);
 
   return (
     <>
-      <Meta results={results}/>
-      <Keyboard
-        notes={selectedNotes}
-        width={windowSize.width}
-        onChange={notes => {
-          soundplayer.play(notes);
-          setSelectedNotes(notes);
-        }}
-      />
+      <Meta results={results} />
+      <TopBar />
+      <ProvideMidi>
+        <Keyboard
+          notes={selectedNotes}
+          width={windowSize.width}
+          onChange={notes => {
+            soundplayer.play(notes);
+            setSelectedNotes(notes);
+          }}
+        />
+      </ProvideMidi>
       <Grid>
         <Row>
-          <Col sm={3}> <Notation selectedNotes={selectedNotes}/></Col>
-          <Col sm={9}> <ResultsFound results={results}/></Col>
+          <Col sm={4}>
+            <Notation selectedNotes={selectedNotes} />
+          </Col>
+          <Col sm={8}>
+            <ResultsFound results={results} selectedNotes={selectedNotes} />
+          </Col>
         </Row>
       </Grid>
-      <ShowHash selectedNotes={selectedNotes}/>
+      <ShowHash selectedNotes={selectedNotes} />
     </>
   );
 };

@@ -4,62 +4,57 @@ import VexFlow from "vexflow";
 import { selectedNotesToVex } from "../../helpers/noteutils";
 
 const VF = VexFlow.Flow;
-const { Formatter, Renderer, Stave, StaveNote } = VF;
-
+const { Renderer } = VF;
 
 const Notation = ({ selectedNotes }) => {
-
-
-  const [vexNotes, setNexVotes] = useState({ "bass": [], "treble": [] });
+  const [vexNotes, setNexVotes] = useState({ bass: [], treble: [] });
 
   const container = useRef();
   const rendererRef = useRef();
 
-
   const addToStave = (context, staffRef, notes, clef) => {
     if (notes.length === 0) return null;
 
-    let note = new VF.StaveNote({ keys: notes, duration: "q", auto_stem: true, clef });
+    let note = new VF.StaveNote({
+      keys: notes,
+      duration: "q",
+      auto_stem: true,
+      clef
+    });
 
     notes.forEach((n, k) => {
       if (n.substr(1, 1) === "#") {
         note = note.addAccidental(k, new VF.Accidental("#"));
       }
-
     });
     let voice = new VF.Voice({ num_beats: 1, resolution: VF.RESOLUTION });
-    var notes = [note];
+
+    notes = [note];
     voice.addTickables(notes);
     return voice;
-
   };
 
-
   useEffect(() => {
-    console.log("--", selectedNotesToVex(selectedNotes));
     setNexVotes(selectedNotesToVex(selectedNotes));
   }, [selectedNotes]);
 
-
   useEffect(() => {
-
     container.current.innerHTML = "";
     rendererRef.current = new Renderer(
       container.current,
       Renderer.Backends.SVG
     );
 
-
     const renderer = rendererRef.current;
-    renderer.resize(200, 300);
+    renderer.resize(200, 250);
     const context = renderer.getContext();
 
-    var topStaff = new VF.Stave(30, 50, 140);
-    var bottomStaff = new VF.Stave(30, 140, 140);
+    const topStaff = new VF.Stave(30, 10, 140);
+    const bottomStaff = new VF.Stave(30, 110, 140);
 
-    var brace = new VF.StaveConnector(topStaff, bottomStaff).setType(3);
-    var lineLeft = new VF.StaveConnector(topStaff, bottomStaff).setType(1);
-    var lineRight = new VF.StaveConnector(topStaff, bottomStaff).setType(6);
+    const brace = new VF.StaveConnector(topStaff, bottomStaff).setType(3);
+    const lineLeft = new VF.StaveConnector(topStaff, bottomStaff).setType(1);
+    const lineRight = new VF.StaveConnector(topStaff, bottomStaff).setType(6);
 
     topStaff.addClef("treble");
     bottomStaff.addClef("bass");
@@ -69,48 +64,38 @@ const Notation = ({ selectedNotes }) => {
     lineLeft.setContext(context).draw();
     lineRight.setContext(context).draw();
 
+    const formatter = new VF.Formatter();
 
-    var formatter = new VF.Formatter();
-
-
-// Make sure the staves have the same starting point for notes
-    var startX = Math.max(topStaff.getNoteStartX(), bottomStaff.getNoteStartX());
+    // Make sure the staves have the same starting point for notes
+    const startX = Math.max(
+      topStaff.getNoteStartX(),
+      bottomStaff.getNoteStartX()
+    );
     topStaff.setNoteStartX(startX);
     bottomStaff.setNoteStartX(startX);
 
     const tv = addToStave(context, topStaff, vexNotes.treble, "treble");
     const bv = addToStave(context, bottomStaff, vexNotes.bass, "bass");
 
-    if(tv)formatter.joinVoices([tv]);
-    if(bv)formatter.joinVoices([bv]);
+    if (tv) formatter.joinVoices([tv]);
+    if (bv) formatter.joinVoices([bv]);
 
-    const joined = [tv,bv].filter( v => !!v);
+    const joined = [tv, bv].filter(v => !!v);
 
-    if(joined.length > 0){
+    if (joined.length > 0) {
       console.log("K", joined);
       formatter.format(joined, 1);
       formatter.formatToStave(joined, topStaff, { align_rests: true });
-      if(tv)var beamsTreble = VF.Beam.applyAndGetBeams(tv);
-      if(bv)var beamsBass = VF.Beam.applyAndGetBeams(bv);
 
-      if(tv)tv.draw(context, topStaff);
-      if(bv)bv.draw(context, bottomStaff);
+      if (tv) tv.draw(context, topStaff);
+      if (bv) bv.draw(context, bottomStaff);
     }
-
-
-
-
-
-
-
-
-
   }, [vexNotes]);
 
   return (
     <>
       <NotationStyles>
-        <div ref={container}/>
+        <div ref={container} />
       </NotationStyles>
     </>
   );

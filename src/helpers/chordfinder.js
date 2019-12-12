@@ -54,7 +54,6 @@ export const removeFromResultArrayByKey = (resultArray, key) => {
   });
 };
 
-
 export const removeDupesFromResultArray = (
   results: Array<Object>
 ): Array<Object> => {

@@ -5,10 +5,12 @@ import useKeyboard from "./state/useKeyboard";
 import Entry from "./components/Entry/Entry";
 import AppWrapper from "./components/AppWrapper/AppWrapper";
 import useDebugVariations from "./state/useDebugVariations";
+import useConfig from "./state/useConfig";
 
 const stateContainers = {
   keyboard: useKeyboard,
-  variations: useDebugVariations
+  variations: useDebugVariations,
+  config: useConfig
 };
 
 function App() {
